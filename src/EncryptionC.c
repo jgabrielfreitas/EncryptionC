@@ -9,42 +9,94 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ctype.h>
 
-int PATH_MAX = 1024;
-char *KEY = "1234567890JGAF";
+#define MAXSIZE 1024
 
-void encrypt(char password[],int key)
-{
-    unsigned int i;
-    for(i=0;i<strlen(password);++i)
-    {
-        password[i] = password[i] - key;
-    }
-}
+char *encrypt(char*);
+char *decrypt(char*);
 
-void decrypt(char password[],int key)
-{
-    unsigned int i;
-    for(i=0;i<strlen(password);++i)
-    {
-        password[i] = password[i] + key;
-    }
-}
+int menu();
 
 int main(void) {
 
-	printf("starting program...........\n");
+	char c, choice[2], s[MAXSIZE];
 
-	char password[20] ;
-	    printf("Enter the password: \n ");
-	    scanf("%s",password);
-	    printf("Passwrod     = %s\n",password);
-	    encrypt(password,0xFACA);
-	    printf("Encrypted value = %s\n",password);
-	    decrypt(password,0xFACA);
-	    printf("Decrypted value = %s\n",password);
+	while (1) {
+		menu();
 
-	printf("\nclosing program............");
-	return EXIT_SUCCESS;
+		gets(choice);
+
+		if ((choice[0] == 'e') || (choice[0] == 'E')) {
+			puts("Input text to encrypt->");
+			gets(s);
+			encrypt(s);
+		} else if ((choice[0] == 'd') || (choice[0] == 'D')) {
+			puts("Input text to decrypt->");
+			gets(s);
+			decrypt(s);
+		} else
+			break;
+	}
+
+	return 0;
 }
+
+char *encrypt(char*str) {
+	int n = 0;
+	char *p = str, q[MAXSIZE];
+
+	while (*p) {
+		if (islower(*p)) {
+			if ((*p >= 'a') && (*p < 'x'))
+				q[n] = toupper(*p + (char) 3);
+			else if (*p == 'x')
+				q[n] = 'A';
+			else if (*p == 'y')
+				q[n] = 'B';
+			else
+				q[n] = 'C';
+		} else {
+			q[n] = *p;
+		}
+		n++;
+		p++;
+	}
+	q[n++] = '\0';
+	puts(q);
+	return q;
+}
+
+char *decrypt(char*str) {
+	int n = 0;
+	char *p = str, q[MAXSIZE];
+
+	while (*p) {
+		if (isupper(*p)) {
+			if ((*p >= 'D') && (*p <= 'Z'))
+				q[n] = tolower(*p - (char) 3);
+			else if (*p == 'A')
+				q[n] = 'x';
+			else if (*p == 'B')
+				q[n] = 'y';
+			else
+				q[n] = 'z';
+		} else {
+			q[n] = *p;
+		}
+		n++;
+		p++;
+	}
+	q[n++] = '\0';
+	puts(q);
+	return q;
+}
+
+int menu() {
+	puts("To encrypt, input e or E\n");
+	puts("To decrypt, input d or D\n");
+	puts("To exit, input any other letter\n");
+	puts("Your choice:->\n");
+	return 0;
+}
+
